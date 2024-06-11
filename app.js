@@ -1,5 +1,5 @@
 const express = require('express')
-const app = express()
+const app = express();
 const { Client } = require('pg');
 //import postgres from 'postgres'
 
