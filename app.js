@@ -15,6 +15,7 @@ const client = new Client({
 	port: 5432,
 	database: DATABASE_NAME,
 });
+
 //const sql = postgres({
  // host: DATABASE_HOST,
  // database: DATABASE_NAME,
