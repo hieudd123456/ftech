@@ -3,7 +3,6 @@ const app = express()
 //const { Client } = require('pg');
 import postgres from 'postgres'
 
-
 const DATABASE_HOST='ep-broad-mud-a1d8bq9s.ap-southeast-1.pg.koyeb.app';
 const DATABASE_USER='ftechadmin';
 const DATABASE_PASSWORD='LNZix9TwBkQ3';
