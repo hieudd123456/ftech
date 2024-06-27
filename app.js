@@ -1,10 +1,12 @@
 const express = require('express')
+const fs = require('fs')
 const app = express();
 const { Client } = require('pg');
 const { Pool } = require('pg');
 //import postgres from 'postgres'
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
+app.use(express.static(__dirname + '/public'));
 const DATABASE_HOST='ep-broad-mud-a1d8bq9s.ap-southeast-1.pg.koyeb.app';
 const DATABASE_USER='ftechadmin';
 const DATABASE_PASSWORD='LNZix9TwBkQ3';
@@ -54,6 +56,12 @@ app.get('/', (req, res) => {
   pool.query('SELECT * FROM sensor_data').then((data)=>{
 	   res.json(data.rows);
   })
+ 
+})
+app.get('/home', (req, res) => {
+    var html = fs.readFileSync('./html/test.html', 'utf8')
+    res.render('test', { html: html })
+    // or res.send(html)
  
 })
 app.post('/api/data', async (req, res) => {
