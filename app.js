@@ -3,7 +3,8 @@ const app = express();
 const { Client } = require('pg');
 const { Pool } = require('pg');
 //import postgres from 'postgres'
-var io = require("socket.io")(app);
+var server = require("http").Server(app);
+var io = require("socket.io")(server);
 const DATABASE_HOST='ep-broad-mud-a1d8bq9s.ap-southeast-1.pg.koyeb.app';
 const DATABASE_USER='ftechadmin';
 const DATABASE_PASSWORD='LNZix9TwBkQ3';
