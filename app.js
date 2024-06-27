@@ -3,7 +3,7 @@ const app = express();
 const { Client } = require('pg');
 const { Pool } = require('pg');
 //import postgres from 'postgres'
-
+var io = require("socket.io")(app);
 const DATABASE_HOST='ep-broad-mud-a1d8bq9s.ap-southeast-1.pg.koyeb.app';
 const DATABASE_USER='ftechadmin';
 const DATABASE_PASSWORD='LNZix9TwBkQ3';
@@ -71,6 +71,14 @@ app.post('/api/data', async (req, res) => {
   }
 });
 
+io.on('connection', (socket) => {
+    console.log('New connection')
+    socket.on('data',(data)=>{
+        console.log(`Clent gui`,data);
+       io.emit('data',data);
+    });
+     socket.on('disconnect', () => console.log('Client disconnected'));
+})
 
 app.listen(port, () => {
   console.log(`App is listening on port ${port}`);
