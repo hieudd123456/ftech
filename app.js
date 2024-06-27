@@ -45,7 +45,7 @@ setInterval(function () {
 	let temp = Math.floor(Math.random() * 30);
 	let humi = Math.floor(Math.random() * 100);
 	pool.query('INSERT INTO sensor_data (temperature, humidity) VALUES ($1, $2) RETURNING *' , [temp, humi] );
-	}, 5000);
+	}, 60000);
 
 const port = process.env.PORT || 3000;
 
