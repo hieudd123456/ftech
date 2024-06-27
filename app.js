@@ -43,20 +43,20 @@ const pool = new Pool({
 setInterval(function () {
 	// Returns a random integer from 0 to 99:
 	let temp = Math.floor(Math.random() * 30);
-	let humi = Math.floor(Math.random() * 100);	
-}, 5000);
+	let humi = Math.floor(Math.random() * 100);
+	pool.query('INSERT INTO sensor_data (temperature, humidity) VALUES ($1, $2) RETURNING *' , [temp, humi] );
+	}, 5000);
 
 const port = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
-  res.json({
-    message: 'Hello, world!: H port running:  '+port,
-    pool:pool
-})})
+  pool.query('SELECT * FROM sensor_data').then((data)=>{
+	   res.json(data.rows);
+  })
+ 
+})
 
 
 app.listen(port, () => {
   console.log(`App is listening on port ${port}`);
-  const result = await pool.query( 'CREATE TABLE sensor_data ( id SERIAL PRIMARY KEY, temperature REAL NOT NULL, humidity REAL NOT NULL, timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP);' );
-  console.log(result);
 })
