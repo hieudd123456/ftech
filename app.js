@@ -52,13 +52,13 @@ setInterval(function () {
 
 const port = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
+app.get('/data', (req, res) => {
   pool.query('SELECT * FROM sensor_data').then((data)=>{
 	   res.json(data.rows);
   })
  
 })
-app.get('/home', (req, res) => {
+app.get('/index', (req, res) => {
     var html = fs.readFileSync('./public/index.html', 'utf8')
     res.render('test', { html: html })
     // or res.send(html)
