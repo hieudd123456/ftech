@@ -1,5 +1,4 @@
-var socket = io("http://" + location.hostname);
-
+var socket = io.connect('/');
 setInterval(function(){
   socket.emit("data",{data:"hello world"});
 },3000)
