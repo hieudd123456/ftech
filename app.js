@@ -89,5 +89,7 @@ io.on('connection', (socket) => {
 })
 
 app.listen(port, () => {
+server.listen(port, () => { 
   console.log(`App is listening on port ${port}`);
-})
+});
+});
