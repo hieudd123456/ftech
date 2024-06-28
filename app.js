@@ -88,8 +88,8 @@ io.on('connection', (socket) => {
      socket.on('disconnect', () => console.log('Client disconnected'));
 })
 
-app.listen(port, () => {
+//app.listen(port, () => {
 server.listen(port, () => { 
   console.log(`App is listening on port ${port}`);
 });
-});
+//});
