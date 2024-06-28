@@ -59,7 +59,7 @@ app.get('/', (req, res) => {
  
 })
 app.get('/home', (req, res) => {
-    var html = fs.readFileSync('./html/test.html', 'utf8')
+    var html = fs.readFileSync('./public/index.html', 'utf8')
     res.render('test', { html: html })
     // or res.send(html)
  
