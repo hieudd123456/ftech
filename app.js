@@ -1,5 +1,6 @@
 const express = require('express')
 const fs = require('fs')
+const path = require('path');
 const app = express();
 const { Client } = require('pg');
 const { Pool } = require('pg');
@@ -48,6 +49,7 @@ setInterval(function () {
 	let temp = Math.floor(Math.random() * 30);
 	let humi = Math.floor(Math.random() * 100);
 	pool.query('INSERT INTO sensor_data (temperature, humidity) VALUES ($1, $2) RETURNING *' , [temp, humi] );
+	
 	}, 60000);
 
 const port = process.env.PORT || 3000;
@@ -59,10 +61,7 @@ app.get('/data', (req, res) => {
  
 })
 app.get('/index', (req, res) => {
-    var html = fs.readFileSync('./public/index.html', 'utf8')
-    res.render('test', { html: html })
-    // or res.send(html)
- 
+    res.sendFile(path.join(__dirname+'/public/index.html'));
 })
 app.post('/api/data', async (req, res) => {
   const { temperature, humidity } = req.body;
