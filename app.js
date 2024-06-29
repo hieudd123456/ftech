@@ -63,7 +63,7 @@ app.get('/data', (req, res) => {
 
 app.get('/insertdata', (req, res) => {
 	let machineserial = req.query.machineserial;
-    	let humidity 	= req.query.humidity;
+    	let temperature = req.query.temperature;
     	let humidity 	= req.query.humidity;
 	if (typeof temperature !== 'number' || typeof humidity !== 'number') {
     		return res.status(400).json({ error: 'Temperature and humidity must be numbers' });
