@@ -59,8 +59,21 @@ app.get('/data', (req, res) => {
   pool.query('SELECT * FROM sensor_data').then((data)=>{
 	   res.json(data.rows);
   })
- 
 })
+
+app.get('/insertdata', (req, res) => {
+	let machineserial = req.query.machineserial;
+    	let humidity 	= req.query.humidity;
+    	let humidity 	= req.query.humidity;
+	if (typeof temperature !== 'number' || typeof humidity !== 'number') {
+    		return res.status(400).json({ error: 'Temperature and humidity must be numbers' });
+  	}
+	pool.query('INSERT INTO sensor_data (machineserial,temperature, humidity) VALUES ($1, $2) RETURNING *',[machineserial,temperature, humidity])
+	  then((result)=>{
+		res.status(201).json(result.rows[0]);
+	  })
+})
+
 app.get('/index', (req, res) => {
     res.sendFile(path.join(__dirname+'/public/index.html'));
 })
