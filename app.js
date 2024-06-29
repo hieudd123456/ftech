@@ -44,13 +44,14 @@ const pool = new Pool({
 	});
  */
 
-setInterval(function () {
+/*setInterval(function () {
 	// Returns a random integer from 0 to 99:
 	let temp = Math.floor(Math.random() * 30);
 	let humi = Math.floor(Math.random() * 100);
 	pool.query('INSERT INTO sensor_data (temperature, humidity) VALUES ($1, $2) RETURNING *' , [temp, humi] );
 	
 	}, 60000);
+ */
 
 const port = process.env.PORT || 3000;
 
