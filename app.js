@@ -69,8 +69,7 @@ app.get('/insertdata', (req, res) => {
 	if (typeof temperature !== 'number' || typeof humidity !== 'number') {
     		return res.status(400).json({ error: 'Temperature and humidity must be numbers' });
   	}
-	pool.query('INSERT INTO sensor_data (machineserial,temperature, humidity) VALUES ($1, $2) RETURNING *',[machineserial,temperature, humidity])
-	  then((result)=>{
+	pool.query('INSERT INTO sensor_data (machineserial,temperature, humidity) VALUES ($1, $2) RETURNING *',[machineserial,temperature, humidity]).then((result)=>{
 		res.status(201).json(result.rows[0]);
 	  })
 })
