@@ -33,24 +33,29 @@ function CreateTable(machineserial){
 });
 }
 // Hàm để ghi dữ liệu vào bảng
-function insertData(machineserial,temperature, humidity) {
+function insertData(machineserial,temperature, humidity,callback=null) {
   db.run(`INSERT INTO sensor_data_${machineserial}(temperature, humidity) VALUES(?, ?)`, [ temperature, humidity], function(err) {
     if (err) {
+	    callback(false) 
       return console.error(err.message);
     }
-    console.log(`Đã chèn một hàng với ID: ${this.lastID}`);
+    console.log(`Đã chèn một hàng với ID: ${this.lastID} ${this.machineserial} ${this.temperature} ${this.humidity}`);
+	if(callback){
+		 callback(true) 
+	  }
   });
 }
 
 // Hàm để đọc dữ liệu từ bảng
-function readData(machineserial) {
+function readData(machineserial,callback) {
   db.all(`SELECT * FROM sensor_data_${machineserial}`, [], (err, rows) => {
     if (err) {
       throw err;
     }
-    rows.forEach((row) => {
-      console.log(`${row.id}: ${row.temperature}°C, ${row.humidity}%, ${row.timestamp}`);
-    });
+    //rows.forEach((row) => {
+      //console.log(`${row.id}: ${row.temperature}°C, ${row.humidity}%, ${row.timestamp}`);
+    //});
+	callback(rows) 
   });
 }
 
@@ -62,26 +67,35 @@ function readData(machineserial) {
 	
 	}, 60000);
  */
+
 CreateTable("5555");
+
 const port = process.env.PORT || 3000;
 
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  API: LAY VE DU LIEU   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 app.get('/data', (req, res) => {
-  pool.query('SELECT * FROM sensor_data').then((data)=>{
-	   res.json(data.rows);
-  })
+	let machineserial = req.query.machineserial ;
+    	
+	if (!machineserial) {
+    		machineserial="5555";
+  	}
+ 	readData(machineserial, (data)=>{
+		res.status(201).json(data);
+	})
 })
 
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  API: THEM DU LIEU   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 app.get('/insertdata', (req, res) => {
 	 console.log(req.query);
 	let machineserial = req.query.machineserial ;
     	let temperature = parseInt(req.query.temperature) ;
     	let humidity 	= parseInt(req.query.humidity) ; 
-	if (typeof temperature !== 'number' || typeof humidity !== 'number') {
-    		return res.status(400).json({ error: 'Temperature and humidity must be numbers' });
+	if (!machineserial || typeof temperature !== 'number' || typeof humidity !== 'number') {
+    		return res.status(400).json({ error: 'machineserial, Temperature and humidity must be numbers' });
   	}
-	pool.query('INSERT INTO sensor_data (machineserial,temperature, humidity) VALUES ($1, $2) RETURNING *',[machineserial,temperature, humidity]).then((result)=>{
-		res.status(201).json(result.rows[0]);
-	  })
+	insertData(machineserial,temperature, humidity,function(isSuccess){
+		res.status(201).json(isSuccess);
+	});
 })
 
 app.get('/index', (req, res) => {
