@@ -34,16 +34,20 @@ function CreateTable(machineserial){
 }
 // Hàm để ghi dữ liệu vào bảng
 function insertData(machineserial,temperature, humidity,callback=null) {
-  db.run(`INSERT INTO sensor_data_${machineserial}(temperature, humidity) VALUES(?, ?)`, [ temperature, humidity], function(err) {
+	try {
+    db.run(`INSERT INTO sensor_data_${machineserial}(temperature, humidity) VALUES(?, ?)`, [ temperature, humidity], function(err) {
     if (err) {
-	    callback(false) 
+	    callback(false);
       return console.error(err.message);
     }
     console.log(`Đã chèn một hàng với ID: ${this.lastID} ${temperature} ${humidity}`);
 	if(callback){
-		 callback(true) 
+		 callback(true);
 	  }
   });
+  } catch (err) {
+	callback(false);	
+  }
 }
 
 // Hàm để đọc dữ liệu từ bảng
