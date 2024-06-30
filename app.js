@@ -38,7 +38,6 @@ function insertData(machineserial,temperature, humidity,callback=null) {
     db.run(`INSERT INTO sensor_data_${machineserial}(temperature, humidity) VALUES(?, ?)`, [ temperature, humidity], function(err) {
     if (err) {
 	    callback(false);
-      return console.error(err.message);
     }
     console.log(`Đã chèn một hàng với ID: ${this.lastID} ${temperature} ${humidity}`);
 	if(callback){
@@ -49,16 +48,37 @@ function insertData(machineserial,temperature, humidity,callback=null) {
 	callback(false);	
   }
 }
+// lấy danh sách các bảng
+function GetListTable(callback) {
+ try {
+  db.serialize(function () {
+    db.all("select name from sqlite_master where type='table'", function (err, tables) {
+        console.log("GetListTable: ",tables);
+	    callback(tables);	
+    });
+});
+  } catch (err) {
+	callback([]);	
+  }
+}
 
 // Hàm để đọc dữ liệu từ bảng
 function readData(machineserial,callback) {
 try {
-  db.all(`SELECT * FROM sensor_data_${machineserial}`, [], (err, rows) => {
-    if (err) {
-     callback(false);
-    }
-	callback(rows) 
-  });
+	GetListTable((listtb)=>{
+		if(listtb.lengh>0){
+		db.all(`SELECT * FROM sensor_data_${machineserial}`, [], (err, rows) => {
+    			if (err) {
+     				callback(false);
+    			}else{
+				callback(rows) 
+			}
+  		});
+		}else{
+			callback(false);
+		}
+	})
+
 } catch (err) {
 	callback(false);	
   }
