@@ -8,41 +8,51 @@ const { Pool } = require('pg');
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
 app.use(express.static(__dirname + '/public'));
-const DATABASE_HOST='ep-broad-mud-a1d8bq9s.ap-southeast-1.pg.koyeb.app';
-const DATABASE_USER='ftechadmin';
-const DATABASE_PASSWORD='LNZix9TwBkQ3';
-const DATABASE_NAME='koyebdb';
+// cau hinh database 
+const sqlite3 = require('sqlite3').verbose();
+// Mở kết nối đến cơ sở dữ liệu SQLite
+const dbPath = path.resolve(__dirname, 'sensor_data.db');
+let db = new sqlite3.Database(dbPath, (err) => {
+  if (err) {
+    console.error(err.message);
+  }
+  console.log('Đã kết nối tới cơ sở dữ liệu SQLite.');
+});
+//Tạo bảng để lưu trữ dữ liệu nhiệt độ và độ ẩm
+function CreateTable(machineserial){
+	db.run(`CREATE TABLE IF NOT EXISTS sensor_data_${machineserial} (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        temperature REAL,
+        humidity REAL,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`, (err) => {
+  if (err) {
+    console.error(err.message);
+  }
+  console.log(`Đã tạo bảng sensor_data_${machineserial}`);
+});
+}
+// Hàm để ghi dữ liệu vào bảng
+function insertData(machineserial,temperature, humidity) {
+  db.run(`INSERT INTO sensor_data_${machineserial}(temperature, humidity) VALUES(?, ?)`, [ temperature, humidity], function(err) {
+    if (err) {
+      return console.error(err.message);
+    }
+    console.log(`Đã chèn một hàng với ID: ${this.lastID}`);
+  });
+}
 
-/*const client = new Client({
-	user: DATABASE_USER,
-	password: DATABASE_PASSWORD,
-	host: DATABASE_HOST,
-	port: 5432,
-	database: DATABASE_NAME,
-	ssl: true
-});
-*/
-const pool = new Pool({
-  	user: DATABASE_USER,
-	password: DATABASE_PASSWORD,
-	host: DATABASE_HOST,
-	port: 5432,
-	database: DATABASE_NAME,
-	ssl: true
-});
-// const sql = postgres({
-//  host: DATABASE_HOST,
-//  database: DATABASE_NAME,
-//  username: DATABASE_USER,
-//  password: DATABASE_PASSWORD,
-//  ssl: 'require',
-// })
-/*client.connect().then(() => {
-		console.log('Connected to PostgreSQL database');
-	}).catch((err) => {
-		console.error('Error connecting to PostgreSQL database', err);
-	});
- */
+// Hàm để đọc dữ liệu từ bảng
+function readData(machineserial) {
+  db.all(`SELECT * FROM sensor_data_${machineserial}`, [], (err, rows) => {
+    if (err) {
+      throw err;
+    }
+    rows.forEach((row) => {
+      console.log(`${row.id}: ${row.temperature}°C, ${row.humidity}%, ${row.timestamp}`);
+    });
+  });
+}
 
 /*setInterval(function () {
 	// Returns a random integer from 0 to 99:
@@ -52,7 +62,7 @@ const pool = new Pool({
 	
 	}, 60000);
  */
-
+CreateTable("5555");
 const port = process.env.PORT || 3000;
 
 app.get('/data', (req, res) => {
