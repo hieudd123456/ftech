@@ -66,8 +66,9 @@ function GetListTable(callback) {
 function readData(machineserial,callback) {
 try {
 	GetListTable((listtb)=>{
-		if(listtb.lengh>0){
-		db.all(`SELECT * FROM sensor_data_${machineserial}`, [], (err, rows) => {
+		if(listtb && (listtb.length>0) && (listtb.FindIndex(x=>x.name==`sensor_data_${machineserial}`)))
+		{
+		db.run(`SELECT * FROM sensor_data_${machineserial}`, [], (err, rows) => {
     			if (err) {
      				callback(false);
     			}else{
