@@ -52,19 +52,16 @@ function insertData(machineserial,temperature, humidity,callback=null) {
 
 // Hàm để đọc dữ liệu từ bảng
 function readData(machineserial,callback) {
-	try {
+try {
   db.all(`SELECT * FROM sensor_data_${machineserial}`, [], (err, rows) => {
     if (err) {
      callback(false);
     }
-    //rows.forEach((row) => {
-      //console.log(`${row.id}: ${row.temperature}°C, ${row.humidity}%, ${row.timestamp}`);
-    //});
 	callback(rows) 
-	  } catch (err) {
+  });
+} catch (err) {
 	callback(false);	
   }
-  });
 }
 
 /*setInterval(function () {
