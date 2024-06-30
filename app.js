@@ -39,7 +39,7 @@ function insertData(machineserial,temperature, humidity,callback=null) {
 	    callback(false) 
       return console.error(err.message);
     }
-    console.log(`Đã chèn một hàng với ID: ${this.lastID} ${this.machineserial} ${this.temperature} ${this.humidity}`);
+    console.log(`Đã chèn một hàng với ID: ${this.lastID} ${temperature} ${humidity}`);
 	if(callback){
 		 callback(true) 
 	  }
@@ -86,7 +86,7 @@ app.get('/data', (req, res) => {
 
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  API: THEM DU LIEU   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 app.get('/insertdata', (req, res) => {
-	 console.log(req.query);
+	 console.log("request",req.query);
 	let machineserial = req.query.machineserial ;
     	let temperature = parseInt(req.query.temperature) ;
     	let humidity 	= parseInt(req.query.humidity) ; 
