@@ -62,6 +62,7 @@ app.get('/data', (req, res) => {
 })
 
 app.get('/insertdata', (req, res) => {
+	 console.log(req.query);
 	let machineserial = req.query.machineserial;
     	let temperature = req.query.temperature;
     	let humidity 	= req.query.humidity;
