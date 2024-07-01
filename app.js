@@ -68,15 +68,15 @@ try {
 	GetListTable((listtb)=>{
 		if(listtb && (listtb.length>0) && ( listtb.findIndex(x=>x.name==`sensor_data_${machineserial}`) >= 0) )
 		{
-		db.run(`SELECT * FROM sensor_data_${machineserial}`, [], (err, rows) => {
+		db.all(`SELECT * FROM sensor_data_${machineserial}`, [], (err, rows) => {
     			if (err) {
-     				callback(false);
+     				callback([]);
     			}else{
 				callback(rows) 
 			}
   		});
 		} else {
-			callback(false);
+			callback([]);
 		}
 	})
 
