@@ -110,12 +110,27 @@ app.get('/data', (req, res) => {
 	})
 })
 
+/**
+ * Lấy danh sách các bảng
+ */
+app.get('/listtable', (req, res) => {
+	GetListTable((listtb)=>{
+		res.status(201).json(listtb);
+	});
+});
+
+app.get('/listtable', (req, res) => {
+	GetListTable((listtb)=>{
+		res.status(201).json(listtb);
+	});
+});
+
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  API: THEM DU LIEU   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 app.get('/insertdata', (req, res) => {
 	 console.log("request",req.query);
 	let machineserial = req.query.machineserial ;
-    	let temperature = parseInt(req.query.temperature) ;
-    	let humidity 	= parseInt(req.query.humidity) ; 
+    	let temperature = parseFloat(req.query.temperature) ;
+    	let humidity 	= parseFloat(req.query.humidity) ; 
 	if (!machineserial || typeof temperature !== 'number' || typeof humidity !== 'number') {
     		return res.status(400).json({ error: 'machineserial, Temperature and humidity must be numbers' });
   	}
@@ -127,21 +142,23 @@ app.get('/insertdata', (req, res) => {
 app.get('/index', (req, res) => {
     res.sendFile(path.join(__dirname+'/public/index.html'));
 })
-app.post('/api/data', async (req, res) => {
-  const { temperature, humidity } = req.body;
-  if (typeof temperature !== 'number' || typeof humidity !== 'number') {
-    return res.status(400).json({ error: 'Temperature and humidity must be numbers' });
-  }
-  try {
-    pool.query('INSERT INTO sensor_data (temperature, humidity) VALUES ($1, $2) RETURNING *',[temperature, humidity])
-	  then((result)=>{
-		res.status(201).json(result.rows[0]);
-	  })
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
+
+
+// app.post('/api/data', async (req, res) => {
+//   const { temperature, humidity } = req.body;
+//   if (typeof temperature !== 'number' || typeof humidity !== 'number') {
+//     return res.status(400).json({ error: 'Temperature and humidity must be numbers' });
+//   }
+//   try {
+//     pool.query('INSERT INTO sensor_data (temperature, humidity) VALUES ($1, $2) RETURNING *',[temperature, humidity])
+// 	  then((result)=>{
+// 		res.status(201).json(result.rows[0]);
+// 	  })
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// });
 
 io.on('connection', (socket) => {
     console.log('New connection')
