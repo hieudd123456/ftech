@@ -57,6 +57,7 @@ function Init(){
  function Step3ShowChart(serial){
     if(myTempChart)myTempChart.destroy();
     console.log("Step3ShowChart",serial);
+     showHideModal('modal_processing',true);
     getData(serial,(data)=>{
         const xValues = [];
         const temperature = [];
@@ -84,7 +85,12 @@ function Init(){
                 }]
             },
             options: {
-                legend: { display: false }
+                legend: { display: false },
+                animation: {
+                  onComplete: function() {
+                      showHideModal('modal_processing',false);
+                      }
+                   }
             }
         });
     })
