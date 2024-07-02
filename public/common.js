@@ -63,10 +63,20 @@ function Init(){
         const temperature = [];
         const humidity = [];
         for(let i=0;i<data.length;i++){
-            var date = new Date(data[i]["timestamp"]);
+            var date = new Date(data[i]["timestamp"].replace(" ","T")+"Z");
             xValues.push(`${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`);
             temperature.push((data[i]["temperature"] || 0));
             humidity.push(data[i]["humidity"] );
+              // tìm dòng cuối cùng.
+            if(i == (dataLength -1) ){
+                let tempstr = `<div class="text-warning" > ${data[dataLength-1]["temperature"]} °C </div>`;
+                let humistr = `<div class="text-primary" > ${data[dataLength-1]["humidity"]} %rH</div>`;
+                let timestr = `<div> ${date.toString()} </div>`;
+                $("#div_last_status").empty();
+                $("#div_last_status").append(tempstr);
+                $("#div_last_status").append(humistr);
+                $("#div_last_status").append(timestr);
+            }
         }
         myTempChart = new Chart("tempchart", {
             type: "line",
