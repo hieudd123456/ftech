@@ -62,6 +62,7 @@ function Init(){
         const xValues = [];
         const temperature = [];
         const humidity = [];
+        let dataLength = data.length
         for(let i=0;i<data.length;i++){
             var date = new Date(data[i]["timestamp"].replace(" ","T")+"Z");
             xValues.push(`${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`);
