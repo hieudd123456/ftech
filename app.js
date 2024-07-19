@@ -84,7 +84,44 @@ try {
 	callback(false);	
   }
 }
+/**
+ * Ham lấy dữ liệu từ ngày
+ * @param {*} machineserial 
+ * @param {*} fromDate 
+ * @param {*} callback 
+ */
+function readDatabyDate(machineserial,fromDate,callback) {
+	try {
+		GetListTable((listtb)=>{
+			if(listtb && (listtb.length>0) && ( listtb.findIndex(x=>x.name==`sensor_data_${machineserial}`) >= 0) )
+			{
+				let fDate = new Date();
+				fDate = toTimestamp(fromDate);
+				if(!fDate) fDate = new Date();
+				
+				let sfromDate = `${fDate.getFullYear()}-${fDate.getMonth()+1}-${fDate.getDate()}`
+				console.log("lay du lieu ngay: "+ sfromDate);
+			db.all(`SELECT * FROM sensor_data_${machineserial} WHERE timestamp >= ${sfromDate} `, [], (err, rows) => {
+					if (err) {
+						 callback([]);
+					}else{
+					callback(rows) 
+				}
+			  });
+			} else {
+				callback([]);
+			}
+		})
+	
+	} catch (err) {
+		callback(false);	
+	  }
+	}
 
+	function toTimestamp(strDate){
+		var datum = Date.parse(strDate);
+		return datum/1000;
+	 }
 /*setInterval(function () {
 	// Returns a random integer from 0 to 99:
 	let temp = Math.floor(Math.random() * 30);
@@ -99,6 +136,7 @@ CreateTable("4444");
 const port = process.env.PORT || 3000;
 
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  API: LAY VE DU LIEU   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//http://localhost:3000/data?machineserial=5555
 app.get('/data', (req, res) => {
 	let machineserial = req.query.machineserial ;
     	
@@ -110,6 +148,19 @@ app.get('/data', (req, res) => {
 	})
 })
 
+app.get('/datadate', (req, res) => {
+	let machineserial = req.query.machineserial ;
+	let fromDate = req.query.fromdate ;
+    	
+	if (!machineserial) {
+    		machineserial="5555";
+  	}
+	let fdate = toTimestamp(fromDate) || new Date();
+
+ 	readDatabyDate(machineserial,toTimestamp(fdate), (data)=>{
+		res.status(201).json(data);
+	})
+})
 /**
  * Lấy danh sách các bảng
  */
