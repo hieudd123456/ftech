@@ -99,9 +99,9 @@ function readDatabyDate(machineserial,fromDate,callback) {
 				fDate = toTimestamp(fromDate);
 				if(!fDate) fDate = new Date();
 				
-				let sfromDate = `${fDate.getFullYear()}-${fDate.getMonth()+1}-${fDate.getDate()}`
-				console.log("lay du lieu ngay: "+ sfromDate);
-			db.all(`SELECT * FROM sensor_data_${machineserial} WHERE timestamp >= ${sfromDate} `, [], (err, rows) => {
+				let sfromDate = `${fDate.getFullYear()}-${(fDate.getMonth()+1).toString().padStart(2, '0')}-${fDate.getDate().toString().padStart(2, '0')}`
+				console.log("lay du lieu tu ngay: "+ sfromDate);
+			db.all(`SELECT * FROM sensor_data_${machineserial}  WHERE timestamp > '${sfromDate} 00:00:00' `, [], (err, rows) => {
 					if (err) {
 						 callback([]);
 					}else{
