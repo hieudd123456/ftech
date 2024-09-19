@@ -58,7 +58,7 @@ function Init(){
     if(myTempChart)myTempChart.destroy();
     console.log("Step3ShowChart",serial);
      showHideModal('modal_processing',true);
-    getData(serial,(data)=>{
+    getDatabyDate(serial,(data)=>{
         const xValues = [];
         const temperature = [];
         const humidity = [];
@@ -127,3 +127,14 @@ function Init(){
         callback(data);
     });
  }
+/* Lấy dữ liệu theo ngày*/
+ function getDatabyDate(serial,fromDate=null,callback){
+     let stringqueryDate="";
+     if(fromDate==null){
+         stringqueryDate ="&fromdate="+fromDate ;
+     }
+    $.get(thisURL+"/datadate?machineserial="+serial+stringqueryDate, (data, err) => {
+        callback(data);
+    });
+ }
+datadate
