@@ -1,5 +1,6 @@
 const express = require('express')
 const fs = require('fs')
+const multer = require('multer');
 const path = require('path');
 const app = express();
 const { Client } = require('pg');
@@ -7,6 +8,9 @@ const { Pool } = require('pg');
 //import postgres from 'postgres'
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
+// Cấu hình multer để lưu ảnh
+const storage = multer.memoryStorage(); // Lưu ảnh vào bộ nhớ RAM
+const upload = multer({ storage: storage });
 app.use(express.static(__dirname + '/public'));
 // cau hinh database 
 const sqlite3 = require('sqlite3').verbose();
@@ -192,7 +196,26 @@ app.get('/insertdata', (req, res) => {
 
 app.get('/index', (req, res) => {
     res.sendFile(path.join(__dirname+'/public/index.html'));
-})
+});
+
+
+// API POST nhận ảnh và lưu thành file
+app.post('/upload', upload.single('image'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).send('No file uploaded.');
+    }
+
+    // Tên file lưu trữ (tạo ngẫu nhiên hoặc đặt theo ý)
+    const fileName = `image_${Date.now()}.jpg`;
+
+    // Lưu file ảnh
+    fs.writeFile(`./uploads/${fileName}`, req.file.buffer, (err) => {
+        if (err) {
+            return res.status(500).send('Failed to save image.');
+        }
+        res.status(200).send(`Image uploaded and saved as ${fileName}`);
+    });
+});
 
 
 // app.post('/api/data', async (req, res) => {
