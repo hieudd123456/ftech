@@ -213,6 +213,7 @@ app.post('/upload', upload.single('image'), (req, res) => {
         if (err) {
             return res.status(500).send('Failed to save image.');
         }
+	    console.log(`Image uploaded and saved as ${fileName}`)
         res.status(200).send(`Image uploaded and saved as ${fileName}`);
     });
 });
