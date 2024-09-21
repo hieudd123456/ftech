@@ -3,7 +3,7 @@ socket.emit("data",{data:"hello world"});
 socket.on("newimage",function(data){
     // cap nhat hinh
     $("#esp32img").attr("src","");
-     $("#esp32img").attr("src","./"+data.imagepath);
+     $("#esp32img").attr("src",""+data.imagepath);
 });
 /**đường dẫn url hiện tại */
 const thisURL = window.location.origin;
@@ -63,7 +63,7 @@ function Init(){
     if(myTempChart)myTempChart.destroy();
     console.log("Step3ShowChart",serial);
      showHideModal('modal_processing',true);
-    getDatabyDate(serial,(data)=>{
+    getDatabyDate(serial,null,(data)=>{
         const xValues = [];
         const temperature = [];
         const humidity = [];
