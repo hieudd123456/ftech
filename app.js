@@ -201,7 +201,7 @@ app.get('/index', (req, res) => {
 
 // API POST nhận ảnh và lưu thành file
 app.post('/upload', upload.single('image'), (req, res) => {
-	console.log("upload request: ",req);
+	//console.log("upload request: ",req);
     if (!req.file) {
         return res.status(400).send('No file uploaded.');
     }
@@ -210,8 +210,9 @@ app.post('/upload', upload.single('image'), (req, res) => {
     const fileName = `image_${Date.now()}.jpg`;
 
     // Lưu file ảnh
-    fs.writeFile(`./uploads/${fileName}`, req.file.buffer, (err) => {
+    fs.writeFile(`./public/images_esp32/${fileName}`, req.file.buffer, (err) => {
         if (err) {
+	     console.log(`Failed to save image.`,err);
             return res.status(500).send('Failed to save image.');
         }
 	    console.log(`Image uploaded and saved as ${fileName}`)
