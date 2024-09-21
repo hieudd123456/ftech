@@ -53,6 +53,11 @@ function Init(){
             alert("Không lấy được danh sách TB!")
         }
     });
+    let dates = new Date();
+      let nameDate = ""+(""+dates.getDate()).padStart(2,"0")+"_"+(""+(dates.getMonth()+1)).padStart(2,"0")+"_"+dates.getFullYear();
+      let fileName = `image_${nameDate}.jpg`;
+	  fileName = `./images_esp32/${fileName}`;
+      $("#esp32img").attr("src",fileName);
  }
  var myTempChart;
 /**
