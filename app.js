@@ -201,6 +201,7 @@ app.get('/index', (req, res) => {
 
 // API POST nhận ảnh và lưu thành file
 app.post('/upload', upload.single('image'), (req, res) => {
+	console.log("upload request: ",req);
     if (!req.file) {
         return res.status(400).send('No file uploaded.');
     }
