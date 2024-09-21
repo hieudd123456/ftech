@@ -203,11 +203,13 @@ app.get('/index', (req, res) => {
 app.post('/upload', upload.single('image'), (req, res) => {
 	//console.log("upload request: ",req);
     if (!req.file) {
+	console.log("No file uploaded.");
         return res.status(400).send('No file uploaded.');
     }
 
     // Tên file lưu trữ (tạo ngẫu nhiên hoặc đặt theo ý)
-    const fileName = `image_${Date.now()}.jpg`;
+      let nameDate = ""+(""+dates.getDate()).padStart(2,"0")+"_"+(""+(dates.getMonth()+1)).padStart(2,"0")+"_"+dates.getFullYear();
+    const fileName = `image_${nameDate}.jpg`;
 
     // Lưu file ảnh
     fs.writeFile(`./public/images_esp32/${fileName}`, req.file.buffer, (err) => {
@@ -217,6 +219,7 @@ app.post('/upload', upload.single('image'), (req, res) => {
         }
 	    console.log(`Image uploaded and saved as ${fileName}`)
         res.status(200).send(`Image uploaded and saved as ${fileName}`);
+	 socket.emit("newimage",{imagepath:`./public/images_esp32/${fileName}`})
     });
 });
 
@@ -242,6 +245,11 @@ io.on('connection', (socket) => {
     socket.on('data',(data)=>{
         console.log(`Clent gui`,data);
        io.emit('data',data);
+    });
+	// báo sự kiện đã có hình up lên server
+    socket.on('newimage',(data)=>{
+        console.log(`newimage`,data);
+       io.emit('newimage',data);
     });
      socket.on('disconnect', () => console.log('Client disconnected'));
 })
