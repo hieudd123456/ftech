@@ -220,7 +220,7 @@ app.post('/upload', upload.single('image'), (req, res) => {
         }
 	    console.log(`Image uploaded and saved as ${fileName}`)
         res.status(200).send(`Image uploaded and saved as ${fileName}`);
-	 socket.emit("newimage",{imagepath:`./public/images_esp32/${fileName}`})
+	 io.emit("newimage",{imagepath:`./images_esp32/${fileName}`})
     });
 });
 
