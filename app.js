@@ -248,10 +248,17 @@ io.on('connection', (socket) => {
        io.emit('data',data);
     });
 	// báo sự kiện đã có hình up lên server
-    socket.on('newimage',(data)=>{
-        console.log(`newimage`,data);
-       io.emit('newimage',data);
-    });
+    //socket.on('newimage',(data)=>{
+     //   console.log(`newimage`,data);
+     //  io.emit('newimage',data);
+    //});
+	// sau 3 giây thì đẩy hình hiện tại có dc lên
+	setTimeout(function(){
+	let dates = new Date();
+      let nameDate = ""+(""+dates.getDate()).padStart(2,"0")+"_"+(""+(dates.getMonth()+1)).padStart(2,"0")+"_"+dates.getFullYear();
+      let fileName = `image_${nameDate}.jpg`;
+	socket.emit("newimage",{imagepath:`./images_esp32/${fileName}`})
+	},3000)	
      socket.on('disconnect', () => console.log('Client disconnected'));
 })
 
