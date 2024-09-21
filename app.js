@@ -208,6 +208,7 @@ app.post('/upload', upload.single('image'), (req, res) => {
     }
 
     // Tên file lưu trữ (tạo ngẫu nhiên hoặc đặt theo ý)
+	let dates = new Date();
       let nameDate = ""+(""+dates.getDate()).padStart(2,"0")+"_"+(""+(dates.getMonth()+1)).padStart(2,"0")+"_"+dates.getFullYear();
     const fileName = `image_${nameDate}.jpg`;
 
