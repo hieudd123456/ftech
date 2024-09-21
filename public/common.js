@@ -1,5 +1,10 @@
 var socket = io();
 socket.emit("data",{data:"hello world"});
+socket.on("newimage",function(data){
+    // cap nhat hinh
+    $("#esp32img").attr("src","");
+     $("#esp32img").attr("src","./"+data.imagepath);
+});
 /**đường dẫn url hiện tại */
 const thisURL = window.location.origin;
 $(document).ready(function () {
@@ -130,7 +135,7 @@ function Init(){
 /* Lấy dữ liệu theo ngày*/
  function getDatabyDate(serial,fromDate=null,callback){
      let stringqueryDate="";
-     if(fromDate==null){
+     if(fromDate!=null){
          stringqueryDate ="&fromdate="+fromDate ;
      }
     $.get(thisURL+"/datadate?machineserial="+serial+stringqueryDate, (data, err) => {
