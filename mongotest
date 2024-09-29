@@ -1,0 +1,102 @@
+//--------------------------------------------------
+
+const { MongoClient, ServerApiVersion } = require('mongodb');
+//var username = encodeURIComponent("YOUR_DATABASE_USERNAME");
+var password = encodeURIComponent("Hieu#0355185363");
+const uri = `mongodb+srv://hieunguyen00678:Hieu%230355185363@ftechcluster.tl1vi6e.mongodb.net/?appName=ftechcluster`;
+
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri);
+var database =null;
+var sensor_table =null;
+var IsDBConnected = false;
+var IsInserting = false;
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    let rs= await client.connect().then(function(data){
+		//console.log("Connect :",data);
+	})
+	//console.log("Connect :",rs);
+	//console.log("KQ isSuccess :",client.isSuccess);
+    // Send a ping to confirm a successful connection
+    //await client.db("ftechdb").command({ ping: 1 });
+	database = client.db("ftechdb");
+	
+	
+	
+	try {
+		//await client.db("ftechdb").command({ ping: 1 });
+		database.command({ ping: 1 });
+    	console.log("Pinged your deployment. You successf");
+		IsDBConnected=true;
+		sensor_table = database.collection("sensor_table");
+		// let listrow =  sensor_table.find({
+		// 	timestamp: {
+		// 		$gt: new Date("2024-09-29T13:00:18Z"),
+		// 		$lt: new Date("2024-09-29T23:58:18Z")
+		// 	} 
+		// });
+		let cuser = sensor_table.find({});
+		//console.log("List rows table sensor :",cuser);
+		let listRS =[]
+		await cuser.forEach(function(el){
+			listRS.push(el);
+			//console.log("el:",el);
+		});
+		console.log("listRS:",listRS);
+		// listrow.forEach(element => {
+		// 	console.log("forEach:",element);
+		// });
+		
+	} catch (error) {
+		IsDBConnected=false;
+		console.log("Error:",error);
+	}
+	
+
+  } finally {
+    // Ensures that the client will close when you finish/error
+    //await client.close();
+  }
+}
+
+// setInterval( () => {
+	
+// 	if(IsDBConnected && IsInserting==false && sensor_table!=null){
+// 	console.log("IsDBConnected:",IsDBConnected);
+// 	console.log("IsInserting:",IsInserting);
+// 	console.log("sensor_table:",(sensor_table!=null));
+// 		IsInserting=true;
+// 		const doc = {
+// 			temperature: 20.9,
+// 			humidity: 70,
+// 			timestamp:new Date()
+// 		  }
+		
+// 		sensor_table.insertOne(doc).then(function(data){
+// 			console.log("Da them 1 dong:",doc);
+// 			IsInserting=false;
+// 		});
+		
+// 	}
+// }, 1000);
+
+run().catch(console.dir);
+
+
+// var mongoose = require('mongoose');
+
+
+// const connectDB = async () => {
+//     try {
+//         await mongoose.connect("mongodb+srv://hieunguyen00678:Hieu%230355185363@ftechcluster.tl1vi6e.mongodb.net/?appName=ftechcluster", {
+//         });
+//         console.log('Database is connected');
+//     } catch (err) {
+//         console.error('Error connecting to the database:', err);
+//     }
+// };
+
+// connectDB();
+
