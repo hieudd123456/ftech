@@ -169,11 +169,11 @@ app.get('/data', (req, res) => {
 /**
  * Lấy danh sách các bảng
  */
-app.get('/listtable', (req, res) => {
-	GetListTable((listtb)=>{
-		res.status(201).json(listtb);
-	});
-});
+// app.get('/listtable', (req, res) => {
+// 	GetListTable((listtb)=>{
+// 		res.status(201).json(listtb);
+// 	});
+// });
 
 
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  API: THEM DU LIEU   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -272,6 +272,7 @@ const uri = `mongodb+srv://hieunguyen00678:Hieu%230355185363@ftechcluster.tl1vi6
 const client = new MongoClient(uri);
 var database =null;
 var sensor_table =null;
+var machines_table =null;
 var IsDBConnected = false;
 var IsInserting = false;
 async function run() {
@@ -292,20 +293,21 @@ async function run() {
 		  console.log("Pinged your deployment. You successf");
 		  IsDBConnected=true;
 		  sensor_table = database.collection("sensor_table");
-		  let cuser =  sensor_table.find({
-		  	timestamp: {
-		  		$gt: new Date("2024-09-26T13:00:18Z"),
-		  		$lt: new Date("2024-10-01T23:58:18Z")
-		  	} 
-		  });
-		 // let cuser = sensor_table.find({});
-		  //console.log("List rows table sensor :",cuser);
-		  let listRS =[]
-		  await cuser.forEach(function(el){
-			  listRS.push(el);
-			  //console.log("el:",el);
-		  });
-		  console.log("listRS:",listRS);
+		  machines_table = database.collection("machine_table");
+		//   let cuser =  sensor_table.find({
+		//   	timestamp: {
+		//   		$gt: new Date("2024-09-26T13:00:18Z"),
+		//   		$lt: new Date("2024-10-01T23:58:18Z")
+		//   	} 
+		//   });
+		//  // let cuser = sensor_table.find({});
+		//   //console.log("List rows table sensor :",cuser);
+		//   let listRS =[]
+		//   await cuser.forEach(function(el){
+		// 	  listRS.push(el);
+		// 	  //console.log("el:",el);
+		//   });
+		//   console.log("listRS:",listRS);
 		  // listrow.forEach(element => {
 		  // 	console.log("forEach:",element);
 		  // });
@@ -404,3 +406,18 @@ app.get('/datadate', async (req, res)  => {
 	console.log("get data :",listRS.length);
 	res.status(201).json(listRS);
 })
+
+
+app.get('/listtable', async(req, res) => {
+	let cuser =   machines_table.find();
+	let listRS =[]
+	console.log(" machines_table :",machines_table);
+	await cuser.forEach(function(el){
+		listRS.push(el);
+		//console.log("el:",el);
+	});
+	console.log("list table :",listRS.length);
+	res.status(201).json(listRS);
+
+	
+});
