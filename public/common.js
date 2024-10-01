@@ -1,10 +1,5 @@
 var socket = io();
 socket.emit("data",{data:"hello world"});
-socket.on("newimage",function(data){
-    // cap nhat hinh
-    $("#esp32img").attr("src","");
-     $("#esp32img").attr("src",""+data.imagepath);
-});
 /**đường dẫn url hiện tại */
 const thisURL = window.location.origin;
 $(document).ready(function () {
@@ -53,11 +48,6 @@ function Init(){
             alert("Không lấy được danh sách TB!")
         }
     });
-    let dates = new Date();
-      let nameDate = ""+(""+dates.getDate()).padStart(2,"0")+"_"+(""+(dates.getMonth()+1)).padStart(2,"0")+"_"+dates.getFullYear();
-      let fileName = `image_${nameDate}.jpg`;
-	  fileName = `./images_esp32/${fileName}`;
-      $("#esp32img").attr("src",fileName);
  }
  var myTempChart;
 /**
@@ -68,13 +58,16 @@ function Init(){
     if(myTempChart)myTempChart.destroy();
     console.log("Step3ShowChart",serial);
      showHideModal('modal_processing',true);
-    getDatabyDate(serial,null,(data)=>{
+    getData(serial,(data)=>{
         const xValues = [];
         const temperature = [];
         const humidity = [];
         let dataLength = data.length
         for(let i=0;i<data.length;i++){
-            var date = new Date(data[i]["timestamp"].replace(" ","T")+"Z");
+            //sql
+            //var date = new Date(data[i]["timestamp"].replace(" ","T")+"Z");
+            //-> mongo
+            var date = new Date(data[i]["timestamp"]);
             xValues.push(`${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`);
             temperature.push((data[i]["temperature"] || 0));
             humidity.push(data[i]["humidity"] );
@@ -133,18 +126,7 @@ function Init(){
  * @param {*} callback 
  */
  function getData(serial,callback){
-    $.get(thisURL+"/data?machineserial="+serial, (data, err) => {
+    $.get(thisURL+"/datadate?machineserial="+serial, (data, err) => {
         callback(data);
     });
  }
-/* Lấy dữ liệu theo ngày*/
- function getDatabyDate(serial,fromDate=null,callback){
-     let stringqueryDate="";
-     if(fromDate!=null){
-         stringqueryDate ="&fromdate="+fromDate ;
-     }
-    $.get(thisURL+"/datadate?machineserial="+serial+stringqueryDate, (data, err) => {
-        callback(data);
-    });
- }
-
