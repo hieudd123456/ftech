@@ -175,11 +175,6 @@ app.get('/listtable', (req, res) => {
 	});
 });
 
-app.get('/listtable', (req, res) => {
-	GetListTable((listtb)=>{
-		res.status(201).json(listtb);
-	});
-});
 
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  API: THEM DU LIEU   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // app.get('/insertdata', (req, res) => {
