@@ -353,7 +353,7 @@ async function run() {
 
   
 app.get('/insertdata', (req, res) => {
-	console.log("request",req.query);
+	//console.log("request",req.query);
 
 	if(IsDBConnected){
 		let machineserial = req.query.machineserial ;
@@ -366,7 +366,7 @@ app.get('/insertdata', (req, res) => {
 
 		IsInserting = true;
 		sensor_table.insertOne({machineserial:machineserial, temperature: temperature, humidity: humidity, timestamp: new Date() }).then(function (data) {
-			console.log("Da them 1 dong:", data);
+			//console.log("Da them 1 dong:", data);
 			IsInserting = false;
 			res.status(201).json(data);
 		});
@@ -404,8 +404,8 @@ app.get('/datadate', async (req, res)  => {
 	let listRS =[]
 	await cuser.forEach(function(el){
 		listRS.push(el);
-		console.log("el:",el);
+		//console.log("el:",el);
 	});
-	console.log("listRS:",listRS);
+	console.log("get data :",listRS.length);
 	res.status(201).json(listRS);
 })
