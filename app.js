@@ -3,9 +3,13 @@ const fs = require('fs')
 const multer = require('multer');
 const path = require('path');
 const app = express();
+const nodemailer = require("nodemailer");
+var transporter =null;
+//juho aniu yanm zonb
 // const { Client } = require('pg');
 // const { Pool } = require('pg');
 //import postgres from 'postgres'
+
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
 const { MongoClient, ServerApiVersion } = require('mongodb');
@@ -123,10 +127,11 @@ function readDatabyDate(machineserial,fromDate,callback) {
 	  }
 	}
 
-	function toTimestamp(strDate){
+	function toTimestamp(strDate)
+	{
 		var datum = Date.parse(strDate);
 		return datum/1000;
-	 }
+	}
 /*setInterval(function () {
 	// Returns a random integer from 0 to 99:
 	let temp = Math.floor(Math.random() * 30);
@@ -143,8 +148,7 @@ const port = process.env.PORT || 3000;
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  API: LAY VE DU LIEU   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //http://localhost:3000/data?machineserial=5555
 app.get('/data', (req, res) => {
-	let machineserial = req.query.machineserial ;
-    	
+	let machineserial = req.query.machineserial;
 	if (!machineserial) {
     		machineserial="5555";
   	}
@@ -261,6 +265,16 @@ io.on('connection', (socket) => {
 //app.listen(port, () => {
 server.listen(port, () => { 
   console.log(`App is listening on port ${port}`);
+
+  transporter = nodemailer.createTransport({
+	host: "smtp.gmail.com",
+	port: 465,
+	secure: true,
+	auth: {
+	  user: "hieunguyen000678@gmail.com",
+	  pass: "juho aniu yanm zonb"
+	}
+  });
 });
 //});
 //-------------------------
@@ -387,7 +401,6 @@ app.get('/datadate', async (req, res)  => {
  	// readDatabyDate(machineserial,toTimestamp(fdate), (data)=>{
 	// 	res.status(201).json(data);
 	// })
-
 	
 	let cuser =  sensor_table.find({
 		timestamp: {
@@ -398,18 +411,17 @@ app.get('/datadate', async (req, res)  => {
 	});
    // let cuser = sensor_table.find({});
 	//console.log("List rows table sensor :",cuser);
-	let listRS =[]
+	let listRS =[];
 	await cuser.forEach(function(el){
 		listRS.push(el);
 		//console.log("el:",el);
 	});
 	console.log("get data :",listRS.length);
 	res.status(201).json(listRS);
-})
-
+});
 
 app.get('/listtable', async(req, res) => {
-	let cuser =   machines_table.find();
+	let cuser =  machines_table.find();
 	let listRS =[]
 	console.log(" machines_table :",machines_table);
 	await cuser.forEach(function(el){
@@ -418,6 +430,32 @@ app.get('/listtable', async(req, res) => {
 	});
 	console.log("list table :",listRS.length);
 	res.status(201).json(listRS);
-
 	
+});
+/**
+ * 
+ */
+var lastSendEventTime = new Date();
+app.get('/notifyevent', async (req, res) => {
+	var curentTime = new Date();
+	// 1 phút mới cho gửi 1 lần
+	if ((curentTime.getTime() - lastSendEventTime.getTime()) > 60000) {
+		lastSendEventTime = new Date();
+		let title = req.query.content || "Device event";
+		let info = await transporter.sendMail({
+			from: `"Google Event" <hieunguyen000678@gmail.com>`,
+			to: "hieunguyen00678@gmail.com",
+			subject: title+" at "+curentTime.toLocaleTimeString(),
+			text: "There a notify from device: "+curentTime.toLocaleTimeString()+" \n DATA: "+JSON.stringify(req.query),
+		}).catch(console.error);
+
+		if (info) {
+			res.status(201).json("Send google -> OK , id:" + info.messageId);
+		} else {
+			res.status(201).json("Send google -> Fail");
+		}
+	}else{
+		res.status(201).json("Send google -> Fail, too quick!");
+	}
+
 });
