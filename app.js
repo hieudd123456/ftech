@@ -5,6 +5,115 @@ const path = require('path');
 const app = express();
 const nodemailer = require("nodemailer");
 var transporter =null;
+const mqtt = require("mqtt");
+const mqttclient = mqtt.connect("mqtt://broker.emqx.io");
+mqttclient.on("connect",()=>{
+	console.log("Connected to MQTT broker");
+	mqttclient.subscribe("feeder_5555/status", (err) => {	
+		if(err){
+			console.log("Error:",err);
+		}else{
+			console.log("Subscribed to topic:",topic);
+		}
+	});
+	
+});
+
+mqttclient.on("error",(err)=>{
+	console.log("Error:",err);
+});
+
+/** Lưu trữ dữ liệu của feeder */
+var LastListData = [];
+/**
+ * message sample: {"hour":15,"minute":34,"output":false,"on":08,"off":17,"duration":3000}
+ */
+mqttclient.on("message", (topic, message) => {
+	// message is Buffer
+	let data = JSON.parse(fixNumber(message.toString()));
+	console.log("Received message on topic:",topic,data);
+	LastListData["feeder_5555"] = data;
+	if(data.output != LastListData["feeder_5555"].output){
+	// Lưu thông báo thay đổi trạng thái vào MongoDB
+	try {
+		if (feeder_status_table && typeof feeder_status_table.insertOne === "function") {
+			const logEntry = {
+				topic: topic,
+				machineserial: "5555",
+				prev_output: LastListData["feeder_5555"].output,
+				new_output: data.output,
+				timestamp: new Date(),
+				message: "Output state changed"
+			};
+			feeder_status_table.insertOne(logEntry).then(function(data){
+				console.log("Da them 1 dong vao bang feeder_status_table:",data);
+			})	.catch(console.error);
+		}
+	} catch (err) {
+		console.error("Error saving state change to MongoDB:", err);
+	}
+	}
+	
+  });
+
+/**
+ * Lấy dữ liệu trạng thái của feeder trong ngày
+ */
+app.get('/feeder_status_today', async (req, res) => {
+	try {
+		if (!feeder_status_table) {
+			return res.status(500).json({ error: "feeder_status_table is not initialized" });
+		}
+		const now = new Date();
+		const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+		const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+
+		const query = {
+			timestamp: {
+				$gte: startOfDay,
+				$lte: endOfDay
+			}
+		};
+
+		const cursor = feeder_status_table.find(query);
+		const results = [];
+		await cursor.forEach(doc => results.push(doc));
+		res.status(200).json(results);
+	} catch (err) {
+		console.error("Error fetching today's feeder status:", err);
+		res.status(500).json({ error: "Internal Server Error" });
+	}
+});
+/**
+ * Lấy dữ liệu trạng thái của feeder trong ngày với output là true
+ */
+app.get('/feeder_status_today_on', async (req, res) => {
+	try {
+		if (!feeder_status_table) {
+			return res.status(500).json({ error: "feeder_status_table is not initialized" });
+		}
+		const now = new Date();
+		const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+		const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+
+		const query = {
+			timestamp: {
+				$gte: startOfDay,
+				$lte: endOfDay
+			},
+			new_output: true
+		};
+
+		const cursor = feeder_status_table.find(query);
+		const results = [];
+		await cursor.forEach(doc => results.push(doc));
+		res.status(200).json(results);
+	} catch (err) {
+		console.error("Error fetching today's feeder status with output true:", err);
+		res.status(500).json({ error: "Internal Server Error" });
+	}
+});
+
 //juho aniu yanm zonb
 // const { Client } = require('pg');
 // const { Pool } = require('pg');
@@ -286,6 +395,7 @@ const uri = `mongodb+srv://hieunguyen00678:Hieu%230355185363@ftechcluster.tl1vi6
 const client = new MongoClient(uri);
 var database =null;
 var sensor_table =null;
+var feeder_status_table =null;
 var machines_table =null;
 var IsDBConnected = false;
 var IsInserting = false;
@@ -308,6 +418,7 @@ async function run() {
 		  IsDBConnected=true;
 		  sensor_table = database.collection("sensor_table");
 		  machines_table = database.collection("machine_table");
+		  feeder_status_table = database.collection("feeder_status_table");
 		//   let cuser =  sensor_table.find({
 		//   	timestamp: {
 		//   		$gt: new Date("2024-09-26T13:00:18Z"),
@@ -459,3 +570,15 @@ app.get('/notifyevent', async (req, res) => {
 	}
 
 });
+
+
+
+
+/**
+ * Hàm fix số 0 ở đầu
+ * @param {*} rawJson 
+ * @returns 
+ */
+function fixNumber(rawJson){
+    return rawJson.replace(/:\s*0+(\d+)/g, ':$1');
+}
