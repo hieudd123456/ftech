@@ -9,7 +9,7 @@ const mqtt = require("mqtt");
 const mqttclient = mqtt.connect("mqtt://broker.emqx.io");
 mqttclient.on("connect",()=>{
 	console.log("Connected to MQTT broker");
-	mqttclient.subscribe("feeder_5555/status", (err) => {	
+	mqttclient.subscribe("feeder_simple/+/status", (err) => {	
 		if(err){
 			console.log("Error:",err);
 		}else{
@@ -571,8 +571,10 @@ app.get('/notifyevent', async (req, res) => {
 
 });
 
-
-
+app.get('/feeder_status_all', async (req, res) => {
+	let status = await feeder_status_table.find({}).toArray();
+	res.status(201).json(status);
+});
 
 /**
  * Hàm fix số 0 ở đầu
@@ -582,3 +584,4 @@ app.get('/notifyevent', async (req, res) => {
 function fixNumber(rawJson){
     return rawJson.replace(/:\s*0+(\d+)/g, ':$1');
 }
+
