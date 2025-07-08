@@ -13,7 +13,7 @@ mqttclient.on("connect",()=>{
 		if(err){
 			console.log("Error:",err);
 		}else{
-			console.log("Subscribed to topic:",topic);
+			console.log("Subscribed to topic:","feeder_simple/+/status");
 		}
 	});
 	
